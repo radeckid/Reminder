@@ -8,9 +8,9 @@ import java.util.Locale;
 
 public class Note implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private final long serialVersionUID = 1L;
 
-    private final int uniqueID;
+    private int uniqueID;
 
     private String title;
 
@@ -106,4 +106,47 @@ public class Note implements Serializable {
         return uniqueID;
     }
 
+    public int getDayOfMonthNr() {
+        return dayOfMonthNr;
+    }
+
+    public void setDayOfMonthNr(int dayOfMonthNr) {
+        this.dayOfMonthNr = dayOfMonthNr;
+    }
+
+    public int getMonthNr() {
+        return monthNr;
+    }
+
+    public void setMonthNr(int monthNr) {
+        this.monthNr = monthNr;
+    }
+
+    public int getYearNr() {
+        return yearNr;
+    }
+
+    public void setYearNr(int yearNr) {
+        this.yearNr = yearNr;
+    }
+
+    public int getMinuteNr() {
+        return minuteNr;
+    }
+
+    public void setMinuteNr(int minuteNr) {
+        this.minuteNr = minuteNr;
+    }
+
+    public int getHourOfDayNr() {
+        return hourOfDayNr;
+    }
+
+    public void setHourOfDayNr(int hourOfDayNr) {
+        this.hourOfDayNr = hourOfDayNr;
+    }
+
+    public void setUniqueID(int uniqueID) {
+        this.uniqueID = uniqueID;
+    }
 }

@@ -25,7 +25,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,11 +43,37 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         file = new FilesOperation(getApplicationContext());
-
         notes = file.loadDataToArray();
+        noteAdapter = new NoteAdapter(notes);
+
+        Bundle cameIntent = getIntent().getExtras();
+
+        if (cameIntent != null) {
+            if (cameIntent.size() >= 3) {
+                String title = cameIntent.getString("saveTitle");
+                String body = cameIntent.getString("saveBody");
+                String timeDate = cameIntent.getString("saveTimeDate");
+                int id = cameIntent.getInt("ID");
+
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle(title);
+                alertDialog.setMessage(body);
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Archiwizuj", (dialog, which) -> {
+
+                    file.deleteNote(id);
+                    noteAdapter.setList(file.loadDataToArray());
+                    noteAdapter.notifyDataSetChanged();
+
+                });
+                alertDialog.show();
+
+                new FilesOperation().saveToArchive(getApplicationContext(), title, body, timeDate);
+            }
+        }
+
+        Button archiveBtn = findViewById(R.id.archiveBtn);
 
         recyclerView = findViewById(R.id.recyclerView);
-        noteAdapter = new NoteAdapter(notes);
 
         setOnSwipe();
         setRecyclerView();
@@ -58,6 +83,12 @@ public class MainActivity extends AppCompatActivity {
         noteAdapter.setOnItemClickListener(position -> createDialog("EDIT", position));
 
         fab.setOnClickListener(v -> createDialog("ADD", -1));
+
+        archiveBtn.setOnClickListener(v -> {
+            Intent archiveIntent = new Intent(MainActivity.this, ArchiveActivity.class);
+            startActivity(archiveIntent);
+            finish();
+        });
     }
 
     private void setOnSwipe() {
@@ -69,12 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                createNotificationOnTime(null, null, null, noteAdapter.getItemAt(viewHolder.getAdapterPosition()).getUniqueID(), "DELETE");
-
                 Note delNote = noteAdapter.getItemAt(viewHolder.getAdapterPosition());
 
-                file.deleteNote(delNote);
+                createNotificationOnTime(null, delNote.getTitle(), null, null, noteAdapter.getItemAt(viewHolder.getAdapterPosition()).getUniqueID(), "DELETE");
 
+                file.deleteNote(delNote.getUniqueID());
+                noteAdapter.setList(file.loadDataToArray());
                 notes.remove(delNote);
                 noteAdapter.notifyDataSetChanged();
             }
@@ -82,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(noteAdapter);
     }
@@ -127,10 +158,7 @@ public class MainActivity extends AppCompatActivity {
         timeBtn.setOnClickListener(v -> getTimeFromPicker(calendar));
 
         addBtn.setOnClickListener(v -> {
-            if (descriptionTitleET.getText().length() <= 0) {
-                descriptionTitleET.setError(getString(R.string.can_not_be_empty));
-                return;
-            } else if (descriptionBodyET.getText().length() <= 0) {
+            if (descriptionBodyET.getText().length() <= 0) {
                 descriptionBodyET.setError(getString(R.string.can_not_be_empty));
                 return;
             } else if (dateBtn.getText().equals(getString(R.string.choice_date))) {
@@ -141,13 +169,13 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             if (dialogType.equals("EDIT") && delNoteID != -1) {
-                createNotificationOnTime(null, null, null, delNoteID, "DELETE");
-
                 Note deleteNote = noteAdapter.getItemAt(position);
 
-                file.deleteNote(deleteNote);
+                createNotificationOnTime(null, deleteNote.getTitle(), null, null, delNoteID, "DELETE");
 
+                file.deleteNote(deleteNote.getUniqueID());
                 notes.remove(deleteNote);
+                noteAdapter.setList(file.loadDataToArray());
                 noteAdapter.notifyDataSetChanged();
             }
 
@@ -161,28 +189,31 @@ public class MainActivity extends AppCompatActivity {
             notes.add(noteForAdd);
 
             file.saveNoteToFile(notes, true);
-
+            noteAdapter.setList(file.loadDataToArray());
             noteAdapter.notifyDataSetChanged();
 
-            createNotificationOnTime(noteForAdd.getCalendar(), noteForAdd.getTitle(), noteForAdd.getBody(), noteForAdd.getUniqueID(), "ADD");
+            String timeDate = "Data: " + noteForAdd.getDay() + " " + noteForAdd.getMonth() + " " + noteForAdd.getYearNr() + "\t\nCzas: " + noteForAdd.getTime();
+
+            createNotificationOnTime(noteForAdd.getCalendar(), noteForAdd.getTitle(), noteForAdd.getBody(), timeDate, noteForAdd.getUniqueID(), "ADD");
             if (alertDialog.isShowing()) {
                 alertDialog.dismiss();
             }
         });
     }
 
-    private void createNotificationOnTime(Calendar calendar, String title, String body, int id, String operationType) {
+    private void createNotificationOnTime(Calendar calendar, String title, String body, String timeDate, int id, String operationType) {
         Intent intent = new Intent(this, NotificationBroadcast.class);
         intent.putExtra("titleExtra", title);
         intent.putExtra("bodyExtra", body);
+        intent.putExtra("timeExtra", timeDate);
         intent.putExtra("ID", id);
         intent.putExtra("OperationType", operationType);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        if (calendar == null && title == null && body == null) {
+        if (calendar == null && body == null) {
             calendar = Calendar.getInstance();
             calendar.setTimeInMillis(0);
         }
@@ -218,13 +249,26 @@ public class MainActivity extends AppCompatActivity {
                     timeBtn.setText(time);
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     calendar.set(Calendar.MINUTE, minute);
+                    calendar.set(Calendar.SECOND, Calendar.getInstance().get(Calendar.SECOND));
                 }, mHour, mMinute, true);
 
         timePickerDialog.show();
     }
 
     private int createID() {
-        Date now = new Date();
-        return Integer.parseInt(new SimpleDateFormat("ddHHmmss", Locale.getDefault()).format(now));
+        Calendar calendar = Calendar.getInstance();
+        return Integer.parseInt(new SimpleDateFormat("ddHHmmss", Locale.getDefault()).format(calendar.getTime()));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
     }
 }

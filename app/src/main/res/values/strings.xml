@@ -14,4 +14,6 @@
     <string name="choice_date_first">Najpierw wybierz datę!</string>
     <string name="save">Zapisz</string>
     <string name="note_saved">Zapisano</string>
+    <string name="Title">Tytuł: </string>
+    <string name="Body">Treść: </string>
 </resources>

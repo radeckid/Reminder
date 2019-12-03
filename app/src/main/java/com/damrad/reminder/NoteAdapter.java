@@ -74,4 +74,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
         return list.size();
     }
 
+    public void setList(ArrayList<Note> list) {
+        this.list = list;
+    }
 }
