@@ -22,15 +22,19 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
 
     static class NoteHolder extends RecyclerView.ViewHolder {
 
+        private TextView dateMonthTV;
+        private TextView dateDayTV;
         private TextView timeTV;
-        private TextView descriptionTV;
-        private TextView dateTV;
+        private TextView descriptionTitleTV;
+        private TextView descriptionBodyTV;
 
         NoteHolder(@NonNull View itemView, OnClickInterface onClickInterface) {
             super(itemView);
             timeTV = itemView.findViewById(R.id.timeTV);
-            descriptionTV = itemView.findViewById(R.id.descriptionTV);
-            dateTV = itemView.findViewById(R.id.dateTV);
+            descriptionTitleTV = itemView.findViewById(R.id.descriptionTitleTV);
+            descriptionBodyTV = itemView.findViewById(R.id.descriptionBodyTV);
+            dateMonthTV = itemView.findViewById(R.id.dateMonthTV);
+            dateDayTV = itemView.findViewById(R.id.dateDayTV);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -50,16 +54,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull NoteHolder holder, int position) {
-//        holder.nameTV.setText(list.get(position).getDate());
-//
-//        if (holder.nameTV.getText().equals("")) {
-//            holder.nameTV.setVisibility(View.GONE);
-//        } else {
-//            holder.nameTV.setVisibility(View.VISIBLE);
-//        }
-//
-//        holder.bodyTV.setText(list.get(position).getDescription());
-//        holder.dateTV.setText(list.get(position).getDate());
+        holder.dateMonthTV.setText(list.get(position).getMonth().trim());
+        holder.dateDayTV.setText(list.get(position).getDay().trim());
+        holder.timeTV.setText(list.get(position).getTime().trim());
+        holder.descriptionTitleTV.setText(list.get(position).getTitle().trim());
+        holder.descriptionBodyTV.setText(list.get(position).getBody().trim());
     }
 
     public void setOnItemClickListener(OnClickInterface onClickInterface) {

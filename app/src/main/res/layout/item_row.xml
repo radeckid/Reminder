@@ -4,9 +4,9 @@
     android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="4dp"
-    android:layout_marginEnd="4dp"
-    android:layout_marginBottom="4dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="8dp"
     android:background="@drawable/item_background"
     android:orientation="vertical"
     app:cardCornerRadius="10dp">
@@ -15,19 +15,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/dateTV"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:text="Lis 18"
-            android:textAlignment="center"
-            android:textColor="@color/textColor"
-            android:textSize="32dp" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/dateMonthTV"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/textColor"
+                android:textSize="32dp" />
+
+            <TextView
+                android:id="@+id/dateDayTV"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/textColor"
+                android:textSize="32dp"
+                android:textStyle="" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginStart="8dp"
             android:orientation="vertical">
 
             <FrameLayout
@@ -40,15 +55,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|center"
                     android:src="@drawable/ic_notifications"
-                    android:tint="@color/backgroundApp" />
+                    android:tint="@color/backround_App" />
 
                 <TextView
                     android:id="@+id/timeTV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginStart="18dp"
-                    android:text="12:14"
+                    android:layout_marginStart="20dp"
                     android:textColor="@color/textColor"
                     android:textSize="20sp"
                     android:visibility="visible" />
@@ -64,19 +78,29 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|center"
                     android:src="@drawable/ic_message"
-                    android:tint="@color/backgroundApp" />
+                    android:tint="@color/backround_App" />
 
                 <TextView
-                    android:id="@+id/descriptionTV"
+                    android:id="@+id/descriptionTitleTV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginStart="18dp"
-                    android:text="Spotkanie grupowe"
+                    android:layout_marginStart="20dp"
                     android:textColor="@color/textColor"
                     android:textSize="20sp"
+                    android:textStyle="bold"
                     android:visibility="visible" />
             </FrameLayout>
+
+            <TextView
+                android:id="@+id/descriptionBodyTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/textColor"
+                android:textSize="20sp"
+                android:visibility="visible" />
         </LinearLayout>
     </LinearLayout>
 

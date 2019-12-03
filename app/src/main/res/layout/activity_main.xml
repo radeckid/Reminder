@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundApp"
+    android:background="@color/backround_App"
     tools:context=".MainActivity">
 
     <TextView
@@ -29,7 +29,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_margin="@dimen/fab_margin"
-        android:backgroundTint="#1cb8ff"
-        app:srcCompat="@drawable/ic_add" />
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/fab_color"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:fabSize="normal" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
